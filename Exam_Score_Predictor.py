@@ -6,11 +6,13 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import LabelEncoder
 
-#add funtion
+# Global variables to store dataset and trained model
+df = None
+model = None
 
-
-# Please add funtion comment
+# Function to load dataset 
 def load_dataset():
+    global df
     file_path = filedialog.askopenfilename(filetypes=[("CSV files", "*.csv"), ("Excel files", "*.xlsx;*.xls")])
     if file_path:
         try:
@@ -24,8 +26,9 @@ def load_dataset():
             messagebox.showerror("Error", f"Failed to load dataset: {e}")
     return None
 
-# Please add funtion comment
+# Function to train model
 def train_model(df, features, target):
+    global model
     try:
         X = df[features]
         y = df[target]
@@ -40,7 +43,7 @@ def train_model(df, features, target):
         messagebox.showerror("Error", f"Failed to train model: {e}")
     return None
 
-# Please add funtion comment
+# Function that uses trained model predict outcomes 
 def make_predictions(model, df, features):
     try:
         X_new = df[features]
