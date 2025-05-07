@@ -29,7 +29,18 @@ def load_dataset():
 # Function to train model
 def train_model(df, features, target):
     global model
+    df_copy = df.copy()
     try:
+
+        # Check if features are categorical and convert to numerical 
+        for feature in features:
+            if df_copy[feature].dtype == "object":
+                df_copy[feature] = LabelEncoder().fit_transform(df_copy[feature].astype(str))
+
+        # Check if target is categorical and convert to numerical 
+            if df_copy[target].dtype == "object":
+                df_copy[target] = LabelEncoder().fittransform(df_copy[target].astype)
+
         X = df[features]
         y = df[target]
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -43,10 +54,16 @@ def train_model(df, features, target):
         messagebox.showerror("Error", f"Failed to train model: {e}")
     return None
 
-# Function that uses trained model predict outcomes 
+# Function that uses trained model to predict outcomes 
 def make_predictions(model, df, features):
+    df_copy = df.copy()
     try:
-        X_new = df[features]
+
+        # Check if features are categorical and convert to numerical 
+        for feature in features:
+            if df_copy[feature].dtype == "object":
+                df_copy[feature] = LabelEncoder().fit_transform(df_copy[feature].astype(str))
+        X_new = df_copy[features]
         predictions = model.predict(X_new)
         result_text.delete(1.0, tk.END)
         result_text.insert(tk.END, f"Predictions:\n{predictions}")
