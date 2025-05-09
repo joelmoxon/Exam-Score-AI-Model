@@ -10,7 +10,21 @@ from sklearn.preprocessing import LabelEncoder
 df = None
 model = None
 
-# Function to load dataset 
+# Function to replace non-numerirc values in numeric columns with mean
+def preprocess_data(dataframe):
+    df_processed = dataframe.copy()
+    numeric_columns = ['age', 'study_hours_per_day', 'social_media_hours', 'netflix_hours', 'attendance_percentage', 'sleep_hours', 'exercise_frequency', 'mental_health_rating', 'exam_score']
+    for column in numeric_columns:
+        df_processed[column] = df_processed[column].astype(str)
+        numeric_mask = df_processed[column].str.replace('.', '', 1).str.isdigit() 
+        if numeric_mask.any():
+            numeric_values = pd.to_numeric(df_processed.loc[numeric_mask, column])
+            median = numeric_values.median()
+            df_processed.loc[~numeric_mask, column] = median
+            df_processed[column] = pd.to_numeric(df_processed[column])
+    return df_processed
+
+# Function to load dataset and call pre-process function 
 def load_dataset():
     global df
     file_path = filedialog.askopenfilename(filetypes=[("CSV files", "*.csv"), ("Excel files", "*.xlsx;*.xls")])
@@ -20,11 +34,26 @@ def load_dataset():
                 df = pd.read_csv(file_path)
             else:
                 df = pd.read_excel(file_path, engine='openpyxl')
+            df = preprocess_data(df)
             messagebox.showinfo("Success", "Dataset loaded successfully *but did you check the script!")
             return df
         except Exception as e:
             messagebox.showerror("Error", f"Failed to load dataset: {e}")
     return None
+
+# Function to save the processed data as a CSV file
+def save_processed_data():
+    if df is None:
+        messagebox.showerror("Error", "No dataset loaded")
+        return
+    file_path = filedialog.asksaveasfilename(
+        defaultextension=".csv",
+        filetypes=[("CSV files", "*.csv")]
+    )
+    if file_path:
+        df.to_csv(file_path, index=False)
+        messagebox.showinfo("", "Your data has been saved")
+
 
 # Function to train model
 def train_model(df, features, target):
@@ -77,6 +106,10 @@ root.title("Student Predictive Grades")
 # Please add funtion comment
 load_button = tk.Button(root, text="Load Dataset", command=lambda: load_dataset())
 load_button.pack(pady=10)
+
+# Button to save the preprocessed data
+save_button = tk.Button(root, text="Save Pre-Processed Data", command=save_processed_data)
+save_button.pack(pady=10)
 
 #Please add funtion comment
 tk.Label(root, text="Features (comma-separated):").pack()
