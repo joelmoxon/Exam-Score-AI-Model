@@ -2,8 +2,8 @@ import pandas as pd
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_squared_error
 from sklearn.preprocessing import LabelEncoder
 
 # Global variables to store dataset and trained model
@@ -38,17 +38,17 @@ def train_model(df, features, target):
                 df_copy[feature] = LabelEncoder().fit_transform(df_copy[feature].astype(str))
 
         # Check if target is categorical and convert to numerical 
-            if df_copy[target].dtype == "object":
-                df_copy[target] = LabelEncoder().fittransform(df_copy[target].astype)
+        if df_copy[target].dtype == "object":
+                df_copy[target] = LabelEncoder().fit_transform(df_copy[target].astype(str))
 
-        X = df[features]
-        y = df[target]
+        X = df_copy[features]
+        y = df_copy[target]
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-        model = RandomForestClassifier()
+        model = RandomForestRegressor()
         model.fit(X_train, y_train)
         y_pred = model.predict(X_test)
-        accuracy = accuracy_score(y_test, y_pred)
-        messagebox.showinfo("Model Trained", f"Model trained successfully! Accuracy: {accuracy:.2f}")
+        mse = mean_squared_error(y_test, y_pred)
+        messagebox.showinfo("Model Trained", f"Model trained successfully! Accuracy: {mse:.2f}")
         return model
     except Exception as e:
         messagebox.showerror("Error", f"Failed to train model: {e}")
