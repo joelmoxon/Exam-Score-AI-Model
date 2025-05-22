@@ -20,13 +20,13 @@ def preprocess_data(dataframe):
 # Replace non-numerirc values in numeric columns with mean
     numeric_columns = ['age', 'study_hours_per_day', 'social_media_hours', 'netflix_hours', 'attendance_percentage', 'sleep_hours', 'exercise_frequency', 'mental_health_rating', 'exam_score']
     for column in numeric_columns:
-        df_processed[column] = df_processed[column].astype(str)
-        numeric_mask = df_processed[column].str.replace('.', '', 1).str.isdigit() 
-        if numeric_mask.any():
-            numeric_values = pd.to_numeric(df_processed.loc[numeric_mask, column])
-            median = numeric_values.median()
-            df_processed.loc[~numeric_mask, column] = median
-            df_processed[column] = pd.to_numeric(df_processed[column])
+        df_processed[column] = pd.to_numeric(df_processed[column], errors='coerce')
+        df_processed[column].fillna(df_processed[column].median(), inplace=True)
+
+# Replace categorical values in categorical columns with mode
+    categorical_columns = ['gender', 'part_time_job', 'diet_quality', 'parental_education_level', 'internet_quality', 'extracurricular_participation']
+    for column in categorical_columns:
+        df_processed[column].fillna(df_processed[column].mode()[0], inplace=True)
 
     return df_processed
 
