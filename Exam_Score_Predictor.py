@@ -10,9 +10,14 @@ from sklearn.preprocessing import LabelEncoder
 df = None
 model = None
 
-# Function to replace non-numerirc values in numeric columns with mean
+# Function to pre-process data
 def preprocess_data(dataframe):
     df_processed = dataframe.copy()
+
+# Removes all blank rows from dataset 
+    df_processed = df_processed.dropna(how='all')
+
+# Replace non-numerirc values in numeric columns with mean
     numeric_columns = ['age', 'study_hours_per_day', 'social_media_hours', 'netflix_hours', 'attendance_percentage', 'sleep_hours', 'exercise_frequency', 'mental_health_rating', 'exam_score']
     for column in numeric_columns:
         df_processed[column] = df_processed[column].astype(str)
@@ -22,6 +27,7 @@ def preprocess_data(dataframe):
             median = numeric_values.median()
             df_processed.loc[~numeric_mask, column] = median
             df_processed[column] = pd.to_numeric(df_processed[column])
+
     return df_processed
 
 # Function to load dataset and call pre-process function 
