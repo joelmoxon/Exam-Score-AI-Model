@@ -6,6 +6,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error
 from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import StandardScaler
 
 # Global variables to store dataset and trained model
 df = None
@@ -18,7 +19,7 @@ def preprocess_data(dataframe):
 # Removes all blank rows from dataset 
     df_processed = df_processed.dropna(how='all')
 
-# Replace non-numerirc values in numeric columns and exam score outliers with mean
+# Replace non-numeric values in numeric columns and exam score outliers with mean
     numeric_columns = ['age', 'study_hours_per_day', 'social_media_hours', 'netflix_hours', 'attendance_percentage', 'sleep_hours', 'exercise_frequency', 'mental_health_rating', 'exam_score']
     for column in numeric_columns:
         df_processed[column] = pd.to_numeric(df_processed[column], errors='coerce')
@@ -31,12 +32,15 @@ def preprocess_data(dataframe):
     for column in categorical_columns:
         df_processed[column].fillna(df_processed[column].mode()[0], inplace=True)
 
-#Encode categorical data 
-
+# Encode categorical data 
     for column in categorical_columns:
         if column in df_processed.columns:
             le = LabelEncoder()
             df_processed[column] = le.fit_transform(df_processed[column].astype(str))
+
+# Apply feature scaling to numerical columns 
+    scaler = StandardScaler()
+    df_processed[numeric_columns] = scaler.fit_transform(df_processed[numeric_columns])
 
     return df_processed
 
@@ -100,40 +104,40 @@ def make_predictions(model, df, features):
     except Exception as e:
         messagebox.showerror("Error", f"Failed to make predictions: {e}")
 
-# Please add funtion comment
+# Create GUI window and title 
 root = tk.Tk()
 root.title("Student Predictive Grades")
 
-# Please add funtion comment
+# Create button to load dataset 
 load_button = tk.Button(root, text="Load Dataset", command=lambda: load_dataset())
 load_button.pack(pady=10)
 
-# Button to save the preprocessed data
+# Create button to save processed dataset 
 save_button = tk.Button(root, text="Save Pre-Processed Data", command=save_processed_data)
 save_button.pack(pady=10)
 
-#Please add funtion comment
+# Create feature selection text box 
 tk.Label(root, text="Features (comma-separated):").pack()
 features_entry = tk.Entry(root)
 features_entry.pack(pady=5)
 
-# Please add funtion comment
+# Create target selection text box 
 tk.Label(root, text="Target:").pack()
 target_entry = tk.Entry(root)
 target_entry.pack(pady=5)
 
-# Please add funtion comment
+# Create train model button
 train_button = tk.Button(root, text="Train Model", command=lambda: train_model(df, features_entry.get().split(','), target_entry.get()))
 train_button.pack(pady=10)
 
-# Please add funtion comment
+# Create make predictions dataset 
 predict_button = tk.Button(root, text="Make Predictions", command=lambda: make_predictions(model, df, features_entry.get().split(',')))
 predict_button.pack(pady=10)
 
-# Please add funtion comment
+# Create display window for predictions 
 result_text = tk.Text(root, height=20, width=80)
 result_text.pack(pady=10)
 
-# Please add funtion comment
+# Main loop to keep application running 
 root.mainloop()
 
