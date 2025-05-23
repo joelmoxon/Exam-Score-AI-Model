@@ -1,5 +1,6 @@
 import pandas as pd
 import tkinter as tk
+import numpy as np
 from tkinter import filedialog, messagebox
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
@@ -17,10 +18,12 @@ def preprocess_data(dataframe):
 # Removes all blank rows from dataset 
     df_processed = df_processed.dropna(how='all')
 
-# Replace non-numerirc values in numeric columns with mean
+# Replace non-numerirc values in numeric columns and exam score outliers with mean
     numeric_columns = ['age', 'study_hours_per_day', 'social_media_hours', 'netflix_hours', 'attendance_percentage', 'sleep_hours', 'exercise_frequency', 'mental_health_rating', 'exam_score']
     for column in numeric_columns:
         df_processed[column] = pd.to_numeric(df_processed[column], errors='coerce')
+        if column == 'exam_score':
+            df_processed[column] = np.where(df_processed[column] > 100, None, df_processed[column])
         df_processed[column].fillna(df_processed[column].median(), inplace=True)
 
 # Replace categorical values in categorical columns with mode
