@@ -39,8 +39,9 @@ def preprocess_data(dataframe):
             df_processed[column] = le.fit_transform(df_processed[column].astype(str))
 
 # Apply feature scaling to numerical columns 
+    scaler_columns = ['age', 'study_hours_per_day', 'social_media_hours', 'netflix_hours', 'attendance_percentage', 'sleep_hours', 'exercise_frequency', 'mental_health_rating']
     scaler = StandardScaler()
-    df_processed[numeric_columns] = scaler.fit_transform(df_processed[numeric_columns])
+    df_processed[scaler_columns] = scaler.fit_transform(df_processed[scaler_columns])
 
     return df_processed
 
