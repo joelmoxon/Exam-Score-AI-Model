@@ -25,7 +25,7 @@ def preprocess_data(dataframe):
         df_processed[column] = pd.to_numeric(df_processed[column], errors='coerce')
         if column == 'exam_score':
             df_processed[column] = np.where(df_processed[column] > 100, None, df_processed[column])
-        df_processed[column].fillna(df_processed[column].median(), inplace=True)
+        df_processed[column].fillna(df_processed[column].mean(), inplace=True)
 
 # Replace categorical values in categorical columns with mode
     categorical_columns = ['gender', 'part_time_job', 'diet_quality', 'parental_education_level', 'internet_quality', 'extracurricular_participation']
@@ -56,7 +56,7 @@ def load_dataset():
             else:
                 df = pd.read_excel(file_path, engine='openpyxl')
             df = preprocess_data(df)
-            messagebox.showinfo("Success", "Dataset loaded successfully *but did you check the script!")
+            messagebox.showinfo("Success", "Dataset loaded successfully")
             return df
         except Exception as e:
             messagebox.showerror("Error", f"Failed to load dataset: {e}")
